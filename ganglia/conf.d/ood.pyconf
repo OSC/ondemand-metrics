@@ -1,0 +1,30 @@
+modules {
+  module {
+    name      = "ood"
+    language  = "python"
+
+    # How often to refresh data
+    param min_poll_seconds {
+      value = 30
+    }
+
+    # Where to log information from this module (syslog facility)
+    param syslog_facility {
+        value = "user"
+    }
+    # log level, WARNING is not expected to produce any output
+    param log_level {
+        value = "WARNING"
+    }
+  }
+}
+
+collection_group {
+  collect_every = 60
+  time_threshold = 120
+
+  metric {
+    name_match = "ood_(.+)"
+    value_threshold = 1.0
+  }
+}

@@ -1,0 +1,10 @@
+{   
+    "report_name" : "ood_passenger_app_report",
+    "report_type" : "standard",
+    "title" : "OOD Passenger App Report",
+    "vertical_label" : "Count",
+    "series" : [
+       { "metric": "ood_rack_apps", "color": "0000FF", "label": "Rack", "type": "stack"},
+       { "metric": "ood_node_apps", "color": "00FF00", "label": "Node", "type": "stack"}
+    ]
+}

@@ -1,0 +1,11 @@
+{   
+    "report_name" : "ood_usage_report",
+    "report_type" : "standard",
+    "title" : "OOD Usage Report",
+    "vertical_label" : "Count",
+    "series" : [
+       { "metric": "ood_unique_client_connections", "color": "33cc33", "label": "Clients", "line_width": "2", "type": "line"},
+       { "metric": "ood_unique_websocket_clients", "color": "5555cc", "label": "Interactive", "line_width": "2", "type": "line"},
+       { "metric": "ood_active_puns", "color": "FF0000", "label": "PUNs", "line_width": "2", "type": "line"}
+    ]
+}
