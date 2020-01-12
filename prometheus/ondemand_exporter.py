@@ -6,7 +6,7 @@ import logging
 import logging.handlers
 from lxml import etree
 from prometheus_client import start_http_server
-from prometheus_client.core import GaugeMetricFamily, REGISTRY
+from prometheus_client.core import GaugeMetricFamily, HistogramMetricFamily, CounterMetricFamily, REGISTRY
 import psutil
 import requests
 import socket
@@ -26,16 +26,22 @@ class OnDemandExporter(object):
         self.node_apps = 0
         self.max_pun_cpu_time_user = 0
         self.avg_pun_cpu_time_user = 0
+        self.pun_cpu_time_user = 0
         self.max_pun_cpu_time_system = 0
         self.avg_pun_cpu_time_system = 0
+        self.pun_cpu_time_system = 0
         self.max_pun_cpu_percent = 0
         self.avg_pun_cpu_percent = 0
+        self.pun_cpu_percent = 0
         self.max_pun_memory_rss = 0
         self.avg_pun_memory_rss = 0
+        self.pun_memory_rss = 0
         self.max_pun_memory_vms = 0
         self.avg_pun_memory_vms = 0
+        self.pun_memory_vms = 0
         self.max_pun_memory_percent = 0
         self.avg_pun_memory_percent = 0
+        self.pun_memory_percent = 0
         self.websocket_connections = 0
         self.unique_websocket_clients = 0
         self.client_connections = 0
@@ -54,8 +60,13 @@ class OnDemandExporter(object):
         avg_pun_cpu_time.add_metric(['user'], self.avg_pun_cpu_time_user)
         avg_pun_cpu_time.add_metric(['system'], self.avg_pun_cpu_time_system)
         yield avg_pun_cpu_time
+        pun_cpu_time = CounterMetricFamily('ood_pun_cpu_time', 'CPU time of PUNs', labels=['mode'])
+        pun_cpu_time.add_metric(['user'], self.pun_cpu_time_user)
+        pun_cpu_time.add_metric(['system'], self.pun_cpu_time_system)
+        yield pun_cpu_time
         yield GaugeMetricFamily('ood_max_pun_cpu_percent', 'Max CPU percent used by a PUN', value=self.max_pun_cpu_percent)
         yield GaugeMetricFamily('ood_avg_pun_cpu_percent', 'Average CPU percent used by a PUN', value=self.avg_pun_cpu_percent)
+        yield GaugeMetricFamily('ood_pun_cpu_percent', 'CPU percent used by all PUNs', value=self.pun_cpu_percent)
         max_pun_memory = GaugeMetricFamily('ood_max_pun_memory', 'Max Memory used by PUN', labels=['type'])
         max_pun_memory.add_metric(['rss'], self.max_pun_memory_rss)
         max_pun_memory.add_metric(['vms'], self.max_pun_memory_vms)
@@ -64,8 +75,13 @@ class OnDemandExporter(object):
         avg_pun_memory.add_metric(['rss'], self.avg_pun_memory_rss)
         avg_pun_memory.add_metric(['vms'], self.avg_pun_memory_vms)
         yield avg_pun_memory
+        pun_memory = GaugeMetricFamily('ood_pun_memory', 'Memory used by all PUNs', labels=['type'])
+        pun_memory.add_metric(['rss'], self.pun_memory_rss)
+        pun_memory.add_metric(['vms'], self.pun_memory_vms)
+        yield pun_memory
         yield GaugeMetricFamily('ood_max_pun_memory_percent', 'Max Memory percent used by PUN', value=self.max_pun_memory_percent)
         yield GaugeMetricFamily('ood_avg_pun_memory_percent', 'Average Memory percent used by PUN', value=self.avg_pun_memory_percent)
+        yield GaugeMetricFamily('ood_pun_memory_percent', 'Memory percent used by all PUNs', value=self.pun_memory_percent)
         yield GaugeMetricFamily('ood_websocket_connections', 'Number of Websocket Connections', value=self.websocket_connections)
         yield GaugeMetricFamily('ood_unique_websocket_clients', 'Number of unique Websocket Clients', value=self.unique_websocket_clients)
         yield GaugeMetricFamily('ood_client_connections', 'Number of client connections', value=self.client_connections)
@@ -139,16 +155,22 @@ class OnDemandExporter(object):
             pun_memory_percent.append(p['memory_percent'])
         self.max_pun_cpu_time_user = max(pun_cpu_time_user)
         self.avg_pun_cpu_time_user = sum(pun_cpu_time_user)/len(pun_cpu_time_user)
+        self.pun_cpu_time_user = sum(pun_cpu_time_user)
         self.max_pun_cpu_time_system = max(pun_cpu_time_user)
         self.avg_pun_cpu_time_system = sum(pun_cpu_time_user)/len(pun_cpu_time_user)
+        self.pun_cpu_time_system = sum(pun_cpu_time_system)
         self.max_pun_cpu_percent = max(pun_cpu_percent)
         self.avg_pun_cpu_percent = sum(pun_cpu_percent)/len(pun_cpu_percent)
+        self.pun_cpu_percent = sum(pun_cpu_percent)
         self.max_pun_memory_rss = max(pun_memory_rss)
         self.avg_pun_memory_rss = sum(pun_memory_rss)/len(pun_memory_rss)
-        self.max_pun_memory_vms = max(pun_memory_rss)
-        self.avg_pun_memory_vms = sum(pun_memory_rss)/len(pun_memory_rss)
+        self.pun_memory_rss = sum(pun_memory_rss)
+        self.max_pun_memory_vms = max(pun_memory_vms)
+        self.avg_pun_memory_vms = sum(pun_memory_vms)/len(pun_memory_vms)
+        self.pun_memory_vms = sum(pun_memory_vms)
         self.max_pun_memory_percent = max(pun_memory_percent)
         self.avg_pun_memory_percent = sum(pun_memory_percent)/len(pun_memory_percent)
+        self.pun_memory_percent = sum(pun_memory_percent)
 
     def get_apache_status_metrics(self):
         servername = self.servername()

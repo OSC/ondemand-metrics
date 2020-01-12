@@ -11,14 +11,16 @@
 * `ood_unique_client_connections` - Number of unique client connects reported by Apache mod_status
 * `ood_max_pun_cpu_time{mode="user|system"}` - Max PUN CPU time
 * `ood_avg_pun_cpu_time{mode="user|system"}` - Average PUN CPU time
-* `ood_max_pun_cpu_percent` - Max PUN CPU percent (*)
-* `ood_avg_pun_cpu_percent` - Average PUN CPU percent (*)
+* `ood_pun_cpu_time{mode="user|system"}` - Total PUN CPU time
+* `ood_max_pun_cpu_percent` - Max PUN CPU percent
+* `ood_avg_pun_cpu_percent` - Average PUN CPU percent
+* `ood_pun_cpu_percent` - Total CPU percent of all PUNs
 * `ood_max_pun_memory{type="rss|vms"}` - Max PUN RSS or virtual memory
 * `ood_avg_pun_memory{type="rss|vms"}` - Average PUN RSS or virtual memory
+* `ood_pun_memory{type="rss|vms"}` - Total PUN RSS or virtual memory
 * `ood_max_pun_memory_percent` - Max PUN memory percent
 * `ood_avg_pun_memory_percent` - Average PUN memory percent
-
-(*) - these metrics are currently always returning 0.
+* `ood_pun_memory_percent` - Total PUN memory percent
 
 ## Setup
 
