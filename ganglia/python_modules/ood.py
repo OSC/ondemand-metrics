@@ -147,8 +147,19 @@ class OOD(object):
         else:
             url = "http://%s/server-status" % servername
         page = requests.get(url)
+        connections_table = None
         tables = etree.HTML(page.content).xpath("//table")
-        rows = iter(tables[0])
+        for table in tables:
+            rows = iter(table)
+            headers = [col.text for col in next(rows)]
+            if headers[0] == "Srv":
+                log.debug("TABLE=%s", table)
+                connections_table = table
+                break
+        if connections_table is None:
+            log.warning("Unable to find connections table")
+            return
+        rows = iter(connections_table)
         headers = [col.text for col in next(rows)]
         log.debug("HEADERS: %s", headers)
         connections = []
